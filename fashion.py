@@ -3,22 +3,20 @@ import tensorflow as tf
 import kerastuner
 
 
-
-
-
 fashion_mnist = tf.keras.datasets.fashion_mnist
 
-(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+(train_images, train_labels), (test_images,
+                               test_labels) = fashion_mnist.load_data()
 
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+
 
 def get_hyperparam() -> kerastuner.HyperParameters:
 
     hp = kerastuner.HyperParameters()
     hp.Choice(name='learning_rate', values=[1e-2, 1e-3], default=1e-2)
     return hp
-
 
 
 def _build_model(hp) -> tf.keras.Model:
@@ -29,10 +27,12 @@ def _build_model(hp) -> tf.keras.Model:
     ])
 
     model.compile(optimizer=tf.keras.optimizers.Adam(hp['learning_rate']),
-                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(
+                      from_logits=True),
                   metrics=['accuracy'])
 
     return model
+
 
 tuner = kerastuner.Hyperband(
     _build_model,
